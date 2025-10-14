@@ -1,44 +1,37 @@
+const { expect } = require('@playwright/test');
 const { BasePage } = require('./BasePage');
 
 class DashboardPage {
   constructor(page) {
     this.page = page;
-    this.totalOrdersKPI = page.locator('[data-testid="total-orders"]');
-    this.chartElement = page.locator('canvas, .chart-container');
-    this.summaryList = page.locator('.summary-list');
-    this.totalProductsKPI = page.locator('[data-testid="total-products"]');
+    this.totalBuyersKPI = page.locator("(//span[@class='info-box-number'])[1]");
+    this.totalSuppliersKPI = page.locator("(//span[@class='info-box-number'])[2]");
+    this.totalOrdersKPI = page.locator("(//span[@class='info-box-number'])[3]");
+    this.totalRequestionsKPI = page.locator("(//span[@class='info-box-number'])[4]");
+
   }
 
-  async goto() {
-    await this.page.goto('/dashboard'); // Assume direct or from login redirect
+  async goto(baseUrl='https://devcore.bechakeena.com') {
+    await this.page.goto(`${baseUrl}/dashboard`); 
   }
 
-  async validateKPIs() {
-    await expect(this.totalOrdersKPI).toBeVisible();
-    await expect(this.totalOrdersKPI).toContainText(/[0-9]+/); // Numeric value
+  async beforeSupplierKpi() {
+    const beforeChangeValue = await this.totalSuppliersKPI.innerText();;
+    return beforeChangeValue;
   }
 
-  async validateCharts() {
-    await expect(this.chartElement).toBeVisible();
+  async afterSupplierKpi() {
+    const afterChangeValue = await this.totalSuppliersKPI.innerText();
+    return afterChangeValue;
+  }
     // Additional checks if needed
-  }
+  
 
-  async validateSummaries() {
+    async validateSummaries() {
     await expect(this.summaryList).toBeVisible();
     await expect(this.summaryList.locator('li')).toHaveCount.greaterThan(0);
   }
 
-  async performCRUDAndRefresh() {
-    // Navigate to add product (assume navigation or URL)
-    await this.page.goto('/products/new');
-    await this.page.fill('input[name="name"]', 'Test Product');
-    await this.page.fill('input[name="price"]', '10.00');
-    await this.page.click('button:has-text("Create")');
-    // Back to dashboard
-    await this.goto();
-    await this.page.waitForTimeout(2000); // Wait refresh
-    await expect(this.totalProductsKPI).toContainText(/[0-9]+/);
-  }
 }
 
 module.exports = { DashboardPage };

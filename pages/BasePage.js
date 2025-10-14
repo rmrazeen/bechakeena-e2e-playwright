@@ -1,8 +1,5 @@
-const { Page } = require('@playwright/test');
-
-class BasePage extends Page {
+class BasePage {
   constructor(page) {
-    super();
     this.page = page;
   }
 
@@ -16,6 +13,14 @@ class BasePage extends Page {
 
   async route(urlPattern, handler) {
     await this.page.route(urlPattern, handler);
+  }
+
+  async getTitle() {
+    return await this.page.title();
+  }
+
+  async getCurrentUrl() {
+    return this.page.url();
   }
 }
 
