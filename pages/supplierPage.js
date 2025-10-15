@@ -1,23 +1,21 @@
 const { expect } = require('@playwright/test');
 const { BasePage } = require('./BasePage');
-import { faker } from '@faker-js/faker';
-import path from 'path';
+const path = require('path');
 
-class SupplierPage {
-
+class SupplierPage extends BasePage {
   constructor(page) {
+    super(page);
     this.page = page;
     this.supplierAddButton = page.locator("//div[@class='text-right']//a[1]");
-    this.supplierNameInput = page.locator("#name");
+    this.supplierNameInput = page.locator("#fullName");
     this.supplierEmailInput = page.locator("#email");
-    this.supplierPhoneInput = page.locator("#phone");
-    this.supplierAddressInput = page.locator("#address");
-    this.supplierSubmitButton = page.locator("//button[@type='submit']");
+    this.supplierPhoneInput = page.locator("(//input[@class='form-control'])[3]");
+    this.supplierSubmitButton = page.locator("(//button[@type='submit'])[1]");
     this.chooseFileButton = page.locator("#avatar");
   }
 
-  async goto(baseUrl='https://devcore.bechakeena.com') {
-    await this.page.goto(`${baseUrl}/admin/users/suppliers/index`); 
+  async goto(baseUrl = 'https://devcore.bechakeena.com') {
+    await this.page.goto(`${baseUrl}/admin/users/suppliers/index`);
   }
 
   async validateSupplierPage() {
@@ -45,13 +43,16 @@ class SupplierPage {
   }
 
   async randomSupplier() {
-    const firstName = faker.name.firstName();
-    const lastName = faker.name.lastName();
+    // ✅ dynamically import faker (works with CommonJS)
+    const { faker } = await import('@faker-js/faker');
+
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
     const fullName = `${firstName} ${lastName}`;
     const email = faker.internet.email({ firstName, lastName });
     const phoneNumber = faker.phone.number('###-###-####');
     const address = faker.location.streetAddress();
-    
+
     await this.fillSupplierName(fullName);
     await this.fillSupplierEmail(email);
     await this.fillSupplierPhone(phoneNumber);
@@ -63,23 +64,13 @@ class SupplierPage {
   }
 
   async uploadSupplierImage(imageFileName = 'Supplier.jpg') {
-    // Navigate to the page where file upload happens (if different)
-    // This assumes the file upload button is already visible
-    
-    // Use Promise.all to wait for both the click and the filechooser event
     const [fileChooser] = await Promise.all([
       this.page.waitForEvent('filechooser'),
-      this.chooseFileButton.click()
+      this.chooseFileButton.click(),
     ]);
 
-    // Provide the path to the file you want to upload
     const filePath = path.join(__dirname, '..', 'img', imageFileName);
-
-    // Set the files in the file chooser
     await fileChooser.setFiles(filePath);
-
-    // Wait for upload to complete (if there's an upload button or confirmation)
-    // You may need to add additional code here if there's an upload button to click
   }
 }
 

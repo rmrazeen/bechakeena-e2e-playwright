@@ -1,6 +1,6 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
-const { LoginPage } = require('../pages/LoginPage'); // adjust path if needed
+const { LoginPage } = require('../pages/LoginPage');
 
 test.describe('Bechakena Admin Login Tests', () => {
   
@@ -12,10 +12,10 @@ test.describe('Bechakena Admin Login Tests', () => {
 
   test('TC01 - Valid login should navigate to admin dashboard', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.login('admin@example.com', 'pa$$word'); // change to valid credentials
+    await loginPage.login('admin@example.com', 'pa$$word'); 
     await loginPage.assertSuccessfulLogin(/.*admin/);
 
-    // Optional: verify dashboard element or URL
+    // verify dashboard element or URL
     await expect(page).toHaveURL(/.*admin/);
   });
 
