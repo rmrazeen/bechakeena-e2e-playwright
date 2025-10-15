@@ -14,6 +14,7 @@ test('Verify Supplier KPI increases after adding a supplier', async ({ page }) =
   await loginPage.goto();
   await loginPage.login('admin@example.com', 'pa$$word'); // change creds if needed
   await loginPage.assertSuccessfulLogin(/.*admin/);
+  console.log('✅ Logged in successfully');
 
   // Step 2️⃣: Go to dashboard and capture KPI before change
   await dashboardPage.goto();
@@ -23,18 +24,18 @@ test('Verify Supplier KPI increases after adding a supplier', async ({ page }) =
   // Step 3️⃣: Go to Supplier Page and add new supplier
   await supplierPage.goto();
   await supplierPage.addSupplierButton();
-  await supplierPage.fillSupplierName('John Dose');
-  await supplierPage.fillSupplierEmail('johnking.doe@example.com');
-  await supplierPage.fillSupplierPhone('923219234');
+  await supplierPage.randomSupplier();
+  await supplierPage.uploadSupplierImage();
+  await page.waitForTimeout(3000);
   await supplierPage.supplierCreateButton();
-
-  // Wait a bit for backend to process
+  await supplierPage.toatsMessageCheck();
+  
   await page.waitForTimeout(3000);
 
   // Step 4️⃣: Go back to dashboard and capture KPI after change
   await dashboardPage.goto();
   const afterKPI = await dashboardPage.getAfterSupplierKpi();
-  console.log(`📈 Suppliers after adding: ${afterKPI}`);
+  console.log(`✅ Suppliers after adding: ${afterKPI}`);
 
   // Step 5️⃣: Assert KPI increased by 1
   expect(afterKPI).toBe(beforeKPI + 1);

@@ -1,6 +1,7 @@
 const { expect } = require('@playwright/test');
 const { BasePage } = require('./BasePage');
 const path = require('path');
+import { faker } from '@faker-js/faker';
 
 class SupplierPage extends BasePage {
   constructor(page) {
@@ -10,8 +11,12 @@ class SupplierPage extends BasePage {
     this.supplierNameInput = page.locator("#fullName");
     this.supplierEmailInput = page.locator("#email");
     this.supplierPhoneInput = page.locator("(//input[@class='form-control'])[3]");
+    this.supplierAddressInput = page.locator("#address"); // Assuming an ID or suitable locator for address
     this.supplierSubmitButton = page.locator("(//button[@type='submit'])[1]");
-    this.chooseFileButton = page.locator("#avatar");
+    this.handlechooseFile = page.locator("#avatar");
+    this.toatsMessage = page.locator('//div[@class="toast-message"]');
+    this.page.locator(`//table//tr[td[normalize-space()="${name}"]]`);
+
   }
 
   async goto(baseUrl = 'https://devcore.bechakeena.com') {
@@ -43,34 +48,48 @@ class SupplierPage extends BasePage {
   }
 
   async randomSupplier() {
-    // ✅ dynamically import faker (works with CommonJS)
-    const { faker } = await import('@faker-js/faker');
-
     const firstName = faker.person.firstName();
     const lastName = faker.person.lastName();
     const fullName = `${firstName} ${lastName}`;
     const email = faker.internet.email({ firstName, lastName });
     const phoneNumber = faker.phone.number('###-###-####');
-    const address = faker.location.streetAddress();
-
     await this.fillSupplierName(fullName);
     await this.fillSupplierEmail(email);
     await this.fillSupplierPhone(phoneNumber);
-    await this.fillSupplierAddress(address);
+    
   }
 
   async supplierCreateButton() {
     await this.supplierSubmitButton.click();
   }
+  
+async toatsMessageCheck() {
+  const expectedText = 'Supplier created successfully';
+  const actualText = await this.toatsMessage.innerText();
+  await expect(this.toatsMessage).toBeVisible();
+  await expect(this.toatsMessage).toContainText(expectedText);
+  console.log(`🎉Message: ${actualText}`);
+}
 
-  async uploadSupplierImage(imageFileName = 'Supplier.jpg') {
-    const [fileChooser] = await Promise.all([
-      this.page.waitForEvent('filechooser'),
-      this.chooseFileButton.click(),
-    ]);
+async clickActionByName(name) {
+  // Locate the table row containing the supplier name
+  
 
-    const filePath = path.join(__dirname, '..', 'img', imageFileName);
-    await fileChooser.setFiles(filePath);
+  // Wait until row is visible
+  await row.waitFor({ state: 'visible' });
+
+  // Locate the Action dropdown inside that row
+  const actionButton = row.locator('.dropdown-toggle, button:has-text("Action")');
+
+  // Click it
+  await actionButton.click();
+}
+
+
+  async uploadSupplierImage() {
+    const filePath = path.join("F:/Task Qtec/img/Supplier.jpg");
+    await this.handlechooseFile.setInputFiles(filePath);
+    
   }
 }
 
