@@ -3,8 +3,8 @@ class BasePage {
     this.page = page;
   }
 
-  async navigateTo(url) {
-    await this.page.goto(url);
+  async navigateTo(url, options) {
+    await this.page.goto(url, options);
   }
 
   async waitForTimeout(ms) {

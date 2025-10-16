@@ -17,7 +17,7 @@ class LoginPage extends BasePage {
 
   /** Navigates to login page */
   async goto() {
-    await this.navigateTo('https://devcore.bechakeena.com');
+    await this.navigateTo('https://devcore.bechakeena.com', { timeout: 60000 }); // Increased timeout to 60 seconds
   }
 
   /** Performs login action */

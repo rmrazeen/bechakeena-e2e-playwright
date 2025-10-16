@@ -15,12 +15,11 @@ class SupplierPage extends BasePage {
     this.supplierSubmitButton = page.locator("(//button[@type='submit'])[1]");
     this.handlechooseFile = page.locator("#avatar");
     this.toatsMessage = page.locator('//div[@class="toast-message"]');
-    this.page.locator(`//table//tr[td[normalize-space()="${name}"]]`);
-
   }
 
   async goto(baseUrl = 'https://devcore.bechakeena.com') {
     await this.page.goto(`${baseUrl}/admin/users/suppliers/index`);
+    await this.page.waitForLoadState('networkidle');
   }
 
   async validateSupplierPage() {
@@ -71,18 +70,72 @@ async toatsMessageCheck() {
   console.log(`🎉Message: ${actualText}`);
 }
 
+
+// loop through table rows and click action button
+/**
+ * Generic reusable method to click the Action button based on column and search value
+ * @param {string} searchValue - The text to search (name, email, etc.)
+ * @param {number} columnIndex - The column number (1-based index, e.g., 2 for name, 4 for email)
+ */
+async clickActionByColumn(searchValue, columnIndex) {
+  // Normalize input for case-insensitive matching
+  const searchLower = searchValue.toLowerCase();
+
+  // Wait until table rows are visible
+  await this.page.waitForSelector('//table//tbody//tr');
+  const rows = this.page.locator('//table//tbody//tr');
+  const rowCount = await rows.count();
+
+  console.log(`🔍 Searching for "${searchValue}" in column ${columnIndex}`);
+  console.log(`📊 Total rows found: ${rowCount}`);
+
+  for (let i = 1; i <= rowCount; i++) {
+    const cellLocator = this.page.locator(`//table//tbody//tr[${i}]//td[${columnIndex}]`);
+    const cellText = await cellLocator.innerText();
+    const cellLower = cellText.trim().toLowerCase();
+
+    // Partial match check
+    if (cellLower.includes(searchLower)) {
+      console.log(`✅ Found match at row ${i} → "${cellText.trim()}"`);
+
+      const actionButton = this.page.locator(
+        `//table//tbody//tr[${i}]//button[contains(text(), 'Action')]`
+      );
+      
+      await actionButton.waitFor({ state: 'visible' });
+      await actionButton.click();
+
+      console.log('🎉 Action button clicked');
+
+      return i; // Return row index for reference
+    }
+  }
+
+  throw new Error(`❌ "${searchValue}" not found in column ${columnIndex}`);
+}
+
+/**
+ * Click Action dropdown using supplier Name
+ * @param {string} name - The supplier name to find
+ */
 async clickActionByName(name) {
-  // Locate the table row containing the supplier name
-  
+  return await this.clickActionByColumn(name, 2); // Assuming Name is in 2nd column
+}
 
-  // Wait until row is visible
-  await row.waitFor({ state: 'visible' });
+/**
+ * Click Action dropdown using supplier Email
+ * @param {string} mail - The supplier email to find
+ */
+async clickActionByMail(mail) {
+  return await this.clickActionByColumn(mail, 3); // Assuming Email is in 4th column
+}
 
-  // Locate the Action dropdown inside that row
-  const actionButton = row.locator('.dropdown-toggle, button:has-text("Action")');
-
-  // Click it
-  await actionButton.click();
+/**
+ * Click Action dropdown using supplier Email
+ * @param {string} phone - The supplier email to find
+ */
+async clickActionByPhone(phone) {
+  return await this.clickActionByColumn(phone, 4); // if phone in 5th column
 }
 
 
@@ -92,5 +145,8 @@ async clickActionByName(name) {
     
   }
 }
+
+
+
 
 module.exports = { SupplierPage };
