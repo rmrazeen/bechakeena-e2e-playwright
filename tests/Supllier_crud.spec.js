@@ -22,7 +22,7 @@ test('Click Action dropdown for given supplier', async ({ page }) => {
 
   // Click by Email
   await supplierPage.clickActionByMail('shariful.sqa@gmail.com');
-  page.pause();
+  page.waitForTimeout(3000);
 }
 
 );

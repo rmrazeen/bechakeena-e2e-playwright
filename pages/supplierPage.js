@@ -119,7 +119,7 @@ async clickActionByColumn(searchValue, columnIndex) {
  * @param {string} name - The supplier name to find
  */
 async clickActionByName(name) {
-  return await this.clickActionByColumn(name, 2); // Assuming Name is in 2nd column
+  return await this.clickActionByColumn(name, 2); // Assuming Name is in 3rd column
 }
 
 /**
