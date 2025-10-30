@@ -15,6 +15,9 @@ class SupplierPage extends BasePage {
     this.supplierSubmitButton = page.locator("(//button[@type='submit'])[1]");
     this.handlechooseFile = page.locator("#avatar");
     this.toatsMessage = page.locator('//div[@class="toast-message"]');
+    this.editButton =  page.locator('//div[contains(@class,"dropdown-menu dropdown-menu-right show")]//a[contains(@class,"dropdown-item")][normalize-space()="Edit"]');
+    this.deleteButton = page.locator('//div[contains(@class,"dropdown-menu dropdown-menu-right show")]//button[contains(@class,"dropdown-item")][normalize-space()="Delete"]');
+    this.updateButton = page.getByRole('button', { name: 'Update' });
   }
 
   async goto(baseUrl = 'https://devcore.bechakeena.com') {
@@ -137,6 +140,15 @@ async clickActionByMail(mail) {
 async clickActionByPhone(phone) {
   return await this.clickActionByColumn(phone, 4); // if phone in 5th column
 }
+
+async clickEditButton() {
+  expect(this.editButton).toBeVisible();
+  await this.editButton.click();
+}
+ async clickDeleteButton() {
+      expect(this.deleteButton).toBeVisible();
+      await this.deleteButton.click();
+ }
 
 
   async uploadSupplierImage() {
