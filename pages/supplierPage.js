@@ -65,8 +65,7 @@ class SupplierPage extends BasePage {
     await this.supplierSubmitButton.click();
   }
   
-async toatsMessageCheck() {
-  const expectedText = 'Supplier created successfully';
+async toatsMessageCheck(expectedText) {
   const actualText = await this.toatsMessage.innerText();
   await expect(this.toatsMessage).toBeVisible();
   await expect(this.toatsMessage).toContainText(expectedText);
