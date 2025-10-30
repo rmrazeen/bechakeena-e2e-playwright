@@ -18,11 +18,13 @@ class SupplierPage extends BasePage {
     this.editButton =  page.locator('//div[contains(@class,"dropdown-menu dropdown-menu-right show")]//a[contains(@class,"dropdown-item")][normalize-space()="Edit"]');
     this.deleteButton = page.locator('//div[contains(@class,"dropdown-menu dropdown-menu-right show")]//button[contains(@class,"dropdown-item")][normalize-space()="Delete"]');
     this.updateButton = page.getByRole('button', { name: 'Update' });
+    this.deleteConfirmButton = page.locator('button.btn.bg-gradient-danger');
+    this.deleteSuccessMessage = page.locator('//div[@class="toast-message"]');
   }
 
   async goto(baseUrl = 'https://devcore.bechakeena.com') {
     await this.page.goto(`${baseUrl}/admin/users/suppliers/index`);
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded'); // Changed from networkidle
   }
 
   async validateSupplierPage() {
